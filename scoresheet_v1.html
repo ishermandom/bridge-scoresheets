@@ -1,0 +1,216 @@
+<!--
+Copyright 2026 Ilya Sherman (ishermandom@)
+SPDX-License-Identifier: CC-BY-NC-4.0
+
+Free to use, share, and adapt for any non-commercial purpose. The spirit of
+the non-commercial restriction: selling this score sheet as a product (even
+with minor modifications) is not okay; using it incidentally as part of
+teaching or a larger project is within the spirit. Contact
+ishermandom@gmail.com with any questions.
+
+TODO:
+* Tidy up the bottom line of text
+* Create a double-sided PDF
+* Print on 32lb or perhaps 67lb paper (thicker than home paper stock)
+* Trim to desired size
+
+-->
+
+<style>
+  :root {
+    --background-color: #d7d7d7 /* mediumturquoise */;
+    --width: 8in;
+    --height: 8.5in;
+    --top-margin: 1in;
+    --side-margin: 0.25in;
+  }
+  
+  @media screen {
+    /* This matches real-world dimensions on my laptop. */
+    body {
+      zoom: 1.39;
+    }
+  }
+  
+  /* Rotate 90º so the 8.5in side is aligned with the 8.5in paper dimension,
+     for fewer cuts needed. */
+  @media print {
+    body {
+      transform: rotate(90deg) translate(-0.25in, -0.25in);
+      border-left: 0;
+      border-right: 1pt dashed black;
+    }
+    #topmargin, #bottommargin, #leftmargin, #rightmargin {
+      display: none;
+    }
+    /* Layout for the back side of the 2-sided print setup. */
+    /*body {
+      transform: rotate(-90deg) translate(0.25in, 0.25in);
+      border-right: 0;
+      border-left: 1pt dashed black;
+    }*/
+  }
+
+  body {
+    width: var(--width);
+    height: var(--height);
+    margin: 0;
+    /* Note: The padding is not quite aligned with the top margin because it's
+     * ok for some text to be inside the holder, as long as the writing surface
+     * is outside. */
+    padding: 0.75in var(--side-margin);
+    font-family: Verdana;
+    box-sizing: border-box;
+    position: relative; /* for the margin divs to position against */
+  }
+  
+  body, table {
+    font-size: 85%;
+  }
+
+  table {
+    border-collapse: collapse;
+  }
+
+  td, th {
+    border: 1px solid black;
+    padding: 3px;
+  }
+  
+  th {
+    font-weight: bold;
+    text-align: center;
+    font-size: 70%;
+  }
+  
+  .dealer, .spacer, .vulnerability {
+    line-height: 1;
+  }
+  .dealer {
+    font-weight: bold;
+    font-size: 5.2pt;
+  }
+  .vulnerability {
+    color: #222;
+    font-size: 4.5pt;
+  }
+  .spacer {
+    display: inline-block;
+    height: 1px;
+  }
+  
+  thead tr {
+    background-color: var(--background-color) /* #d7d7d7 */;
+  }
+  tr:nth-child(even) {
+    /* Note: If the background color is mediumturquoise, a lightness of 95 works
+     * a bit better. */
+    background-color: hsl(from var(--background-color) h s 98) /* #f7f7f7 */;
+  }
+  
+  td:nth-child(1) {
+    text-align: center;
+  }
+  td:nth-child(2) {
+    font-weight: bold;
+    text-align: right;
+  }
+  td:nth-child(1) { width: 0.2in; max-width: 0.2in; }
+  td:nth-child(3) { width: 0.3in; max-width: 0.3in; }
+  td:nth-child(4) { width: 0.2in; max-width: 0.2in; }
+  td:nth-child(5) { width: 0.3in; max-width: 0.3in; }
+  td:nth-child(6) { width: 0.6in; max-width: 0.6in; }
+  td:nth-child(7) { width: 5.25in; max-width: 5.25in; }
+  
+  /* === License footer === */
+  #license-footer {
+    position: absolute;
+    bottom: var(--hard-margin);
+    left: var(--side-margin);
+    right: var(--side-margin);
+    text-align: center;
+    font-size: 6pt;
+    color: #888;
+  }
+
+  #topmargin, #bottommargin, #leftmargin, #rightmargin {
+    z-index: 2;
+    position: absolute;
+    background-color: red;
+    opacity: 50%;
+  }
+  #topmargin, #bottommargin {
+    left: 0;
+    width: var(--width);
+    height: var(--top-margin);
+  }
+  #leftmargin, #rightmargin {
+    top: var(--top-margin);
+    width: var(--side-margin);
+    height: calc(var(--height) - 2 * var(--top-margin));
+  }
+  #topmargin { top: 0; }
+  #bottommargin { bottom: 0; }
+  #leftmargin { left: 0; }
+  #rightmargin { right: 0; }
+</style>
+
+<div id="leftmargin"></div>
+<div id="topmargin"></div>
+<div id="rightmargin"></div>
+<div id="bottommargin"></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Dlr Vul</th>
+      <th>Bd</th>
+      <th>Score</th>
+      <th>Vs</th>
+      <th>Lead</th>
+      <th>Contract</th>
+      <th>Auction + Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+
+<p>
+Pair #: _________ &nbsp;&nbsp;
+Event: ______________________________ &nbsp;&nbsp;
+Date: __________
+</p>
+
+<div id="license-footer">© 2026 Ilya Sherman · CC BY-NC 4.0 · Non-commercial use only</div>
+
+<script>
+  const DEALERS = ['N', 'E', 'S', 'W'];
+  const VULNERABILITIES = ['NONE', 'N-S', 'E-W', 'BOTH']
+
+  const table = document.getElementsByTagName('tbody')[0]
+  for (let i = 0; i < 28; i++) {
+    const row = document.createElement('tr');
+
+    // Populate the dealer and vulnerability.
+    const dealerAndVulnerability = document.createElement('td');
+    const dealer = DEALERS[i % 4];
+    const vulnerability = VULNERABILITIES[(Math.trunc(i / 4) + i) % 4];
+    dealerAndVulnerability.innerHTML =
+        `<span class="dealer">${dealer}</span><br/>` +
+        `<span class="spacer"></span><br/>` +
+        `<span class="vulnerability">${vulnerability}</span>`;
+    row.appendChild(dealerAndVulnerability)
+
+    // Populate the board number.
+    const board = document.createElement('td');
+    board.textContent = i + 1;
+    row.appendChild(board);
+
+
+    for (let j = 2; j < 7; j++) {
+      row.appendChild(document.createElement('td'));
+    }
+    table.appendChild(row);
+  }
+</script>

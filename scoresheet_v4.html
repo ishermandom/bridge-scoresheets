@@ -1,0 +1,463 @@
+<!--
+Copyright 2026 Ilya Sherman (ishermandom@)
+SPDX-License-Identifier: CC-BY-NC-4.0
+
+Free to use, share, and adapt for any non-commercial purpose. The spirit of
+the non-commercial restriction: selling this score sheet as a product (even
+with minor modifications) is not okay; using it incidentally as part of
+teaching or a larger project is within the spirit. Contact
+ishermandom@gmail.com with any questions.
+
+TODO:
+* Print on 32lb or perhaps 67lb paper (thicker than home paper stock)
+
+-->
+
+<style>
+  /* === Variables === */
+  :root {
+    /* Alternative: Consider mediumturquoise as the background color. */
+    --background-color: #d7d7d7;
+    --width: 8in;
+    --height: 8.5in;
+    /* Hard margin: physical printer limit (non-printable area). */
+    --hard-margin: 0.18in;
+    /* Soft margins: printable but obscured by the card holder. */
+    --top-margin: 1in;
+    --side-margin: 0.25in;
+    /* Rows sized to fill the writable area; the remaining rows overflow into
+       the bottom margin. Change --row-count to resize all rows at once. */
+    --row-count: 26;
+    --header-height: 17px; /* measured */
+  }
+  
+  /* === Media queries === */
+  @media screen {
+    /* This matches real-world dimensions on my laptop. */
+    body {
+      zoom: 1.39;
+    }
+  }
+  
+  /* Rotate 90º so the 8.5in side is aligned with the 8.5in paper dimension,
+     for fewer cuts needed. */
+  @media print {
+    .hard-margin, .soft-margin {
+      display: none;
+    }
+    
+    body {
+      transform: rotate(90deg) translate(-0.25in, -0.25in);
+      border-left: 0;
+      border-right: 1pt dashed black;
+    }
+    /* For a 2-sided print: swap the active body rule above with this one,
+       then print again on the reverse side of the page. */
+    /*body {
+      transform: rotate(-90deg) translate(0.25in, 0.25in);
+      border-right: 0;
+      border-left: 1pt dashed black;
+    }*/
+  }
+
+  /* === Base === */
+  body {
+    width: var(--width);
+    height: var(--height);
+    margin: 0;
+    /* Note: The padding is not quite aligned with the top margin because it's
+     * ok for some text to be inside the holder, as long as the writing surface
+     * is outside. And the card actually can slide a bit within the holder. */
+    padding: 0.65in var(--side-margin);
+    font-family: 'Helvetica Neue';
+    font-size: 8pt;
+    box-sizing: border-box;
+    position: relative; /* for the margin divs to position against */
+  }
+  
+  table {
+    border-collapse: collapse;
+  }
+
+  thead tr {
+    background-color: var(--background-color);
+  }
+  
+  td, th {
+    border: 1px solid black;
+    padding: 1.5pt 2.5pt;
+    line-height: 1;
+    vertical-align: middle;
+  }
+
+  th {
+    font-weight: bold;
+    text-align: center;
+    /* TODO: Decide which style I prefer. Claude Design's all uppercase somehow
+       looks better than this document's; not sure why exactly. */
+    /*text-transform: uppercase;*/
+  }
+  
+  /* === Main scoring table === */
+  #main thead tr {
+    box-shadow: inset 0 -1px 0 black;
+    font-size: 9pt;
+  }
+
+  #main tbody tr {
+    height: calc(
+      (var(--height) - var(--top-margin) - 0.65in - var(--header-height))
+      / var(--row-count)
+    );
+  }
+
+  #main tr:nth-child(even) {
+    /* Lightness 98 works for the default gray; use 95 with mediumturquoise. */
+    background-color: hsl(from var(--background-color) h s 98);
+  }
+
+  /**
+   * Round-break guides:
+   * - Solid black line for 4 round of 6 or 7 boards each.
+   * - More heavily shaded divider row for 3 rounds of 8 boards each.
+   */
+  #main tbody tr:nth-child(7n):not(:last-child) {
+    border-bottom: 2px solid black;
+  }
+  #main tbody tr:nth-child(9),
+  #main tbody tr:nth-child(18) {
+    background-color: hsl(from var(--background-color) h s 94);
+  }
+
+  /* Dealer, vulnerability, and board number. */
+  #main td {
+    font-size: 12pt;
+  }
+
+  /* Dealer + vulnerability combined cell. */
+  #main td:nth-child(1) {
+    text-align: center;
+    font-variant-caps: all-small-caps;
+    white-space: nowrap;
+  }
+  #main td:nth-child(1) .dealer {
+    color: #222;
+  }
+  #main td:nth-child(1) .sep {
+    margin: 0 2px;
+  }
+  #main td:nth-child(1) .vuln {
+    font-weight: 600;
+    font-family: 'Menlo', monospace;
+    /*font-size: 9pt;*/
+    /* Fixed width so all cells share the same total content width,
+       keeping dealer letters vertically aligned under centering.
+    display: inline-block;
+    width: 1.5em;
+    text-align: center;*/
+  }
+
+  /* Board number */
+  #main td:nth-child(2) {
+    font-weight: bold;
+    text-align: right;
+    /* Replicate the visual style from Verdana. */
+    letter-spacing: 0.5px;
+  }
+
+  /**
+   * Column widths.
+   * Columns 5 (vs.) and 8 (auction/notes) are sized explicitly. The rest are
+   * sized implicitly based on the header size.
+   * Note that setting an untenable width for column 8 results in clipping to
+   * the page margin, which is exactly the desired behavior.
+   */
+  #main td:nth-child(5) { width: 0.2in; }
+  #main td:nth-child(8) { width: 8in; }
+  
+  /* === Top matter === */
+  #topmatter {
+    position: absolute;
+    top: var(--hard-margin);
+    left: var(--side-margin);
+    right: var(--side-margin);
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+  }
+
+  /* === Pair line & fields === */
+  #pairline {
+    padding-top: 0.5em;
+    display: grid;
+    grid-template-columns: 1.5fr 3fr 1.2fr;
+    column-gap: 10px;
+  }
+  .field {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+    color: #333;
+  }
+  .field::after {
+    content: '';
+    flex: 1;
+    border-bottom: 0.5pt solid #444;
+  }
+
+  /* === Charts === */
+  .chart {
+    display: flex;
+    align-items: stretch;
+  }
+  .chart-label {
+    writing-mode: vertical-lr;
+    transform: rotate(180deg);
+    text-align: center;
+    font-size: 7pt;
+    letter-spacing: 0.2px;
+    padding: 2px 3px;
+    background: #e8e8e8;
+    border: 1px solid #aaa;
+  }
+  .chart table {
+    font-size: 7pt;
+    border: 1px solid #aaa;
+    border-left: none;
+  }
+  .chart td {
+    text-align: right;
+    border: none;
+    color: #111;
+    font-variant-numeric: tabular-nums;
+  }
+  .chart td:nth-child(odd) {
+    background: #f2f2f2;
+  }
+  .chart td:nth-child(even) {
+    background: #d4d4d4;
+    font-weight: bold;
+  }
+  .chart td:nth-child(even):not(:last-child) {
+    border-right: 2px solid white;
+  }
+  #vps td:nth-child(even) {
+    text-align: left;
+  }
+  
+  /* === License footer === */
+  #license-footer {
+    position: absolute;
+    bottom: var(--hard-margin);
+    left: var(--side-margin);
+    right: var(--side-margin);
+    text-align: center;
+    font-size: 6pt;
+    color: #888;
+  }
+
+  /* === Hard-margin overlays (non-printable area) === */
+  .hard-margin {
+    z-index: 3;
+    position: absolute;
+    background-color: black;
+  }
+  #hard-top, #hard-bottom {
+    left: 0;
+    width: var(--width);
+    height: var(--hard-margin);
+  }
+  #hard-left, #hard-right {
+    top: 0;
+    width: var(--hard-margin);
+    height: var(--height);
+  }
+  #hard-top { top: 0; }
+  #hard-bottom { bottom: 0; }
+  #hard-left { left: 0; }
+  #hard-right { right: 0; }
+
+  /* === Soft-margin overlays (printable but inaccessible for writing) === */
+  .soft-margin {
+    z-index: 2;
+    position: absolute;
+    background-color: red;
+    opacity: 50%;
+  }
+  #soft-top, #soft-bottom {
+    left: 0;
+    width: var(--width);
+    height: var(--top-margin);
+  }
+  #soft-left, #soft-right {
+    top: var(--top-margin);
+    width: var(--side-margin);
+    height: calc(var(--height) - 2 * var(--top-margin));
+  }
+  #soft-top { top: 0; }
+  #soft-bottom { bottom: 0; }
+  #soft-left { left: 0; }
+  #soft-right { right: 0; }
+
+</style>
+
+<!-- Hard margins: non-printable area -->
+<div class="hard-margin" id="hard-left"></div>
+<div class="hard-margin" id="hard-top"></div>
+<div class="hard-margin" id="hard-right"></div>
+<div class="hard-margin" id="hard-bottom"></div>
+
+<!-- Soft margins: printable but inaccessible for writing (obscured by card holder) -->
+<div class="soft-margin" id="soft-left"></div>
+<div class="soft-margin" id="soft-top"></div>
+<div class="soft-margin" id="soft-right"></div>
+<div class="soft-margin" id="soft-bottom"></div>
+
+<table id="main">
+  <thead>
+    <tr>
+      <th>D/V</th>
+      <th>Bd</th>
+      <th>Score</th>
+      <th>MPs</th>
+      <th>Vs</th>
+      <th>Lead</th>
+      <th>Contract</th>
+      <th>Auction + Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+
+<div id="pairline">
+  <span class="field">Pair / Team #</span>
+  <span class="field">Event</span>
+  <span class="field">Date</span>
+</div>
+
+<div id="topmatter">
+  <div class="chart">
+    <div class="chart-label">IMPs</div>
+    <table id="imps"></table>
+  </div>
+
+  <div class="chart">
+    <div class="chart-label">VPs</div>
+    <table id="vps"></table>
+  </div>
+</div>
+
+<div id="license-footer">© 2026 Ilya Sherman · CC BY-NC 4.0 · Non-commercial use only</div>
+
+<script>
+  /**
+   * Populates the main scoring table with 28 rows.
+   * This supports a pairs game of up to 28 boards.
+   * And it supports a teams game that's any of:
+   * - 3 rounds x 8 boards
+   * - 4 rounds x 7 boards
+   * - 4 rounds x 6 boards
+   */
+  function buildMainTable() {
+    const DEALERS = ['N', 'E', 'S', 'W'];
+    const VULNERABILITIES = ['———', 'N/S', 'E/W', 'ALL'];
+
+    const table = document.getElementsByTagName('tbody')[0];
+    for (let i = 0; i < 28; i++) {
+      const row = document.createElement('tr');
+
+      // Populate the combined dealer + vulnerability cell.
+      const dealerAndVulnerability = document.createElement('td');
+      const dealer = document.createElement('span');
+      dealer.className = 'dealer';
+      dealer.textContent = DEALERS[i % 4];
+      const separator = document.createElement('span');
+      separator.className = 'sep';
+      separator.textContent = ' ';
+      const vulnerability = document.createElement('span');
+      vulnerability.className = 'vuln';
+      vulnerability.textContent = VULNERABILITIES[(Math.trunc(i / 4) + i) % 4];
+      dealerAndVulnerability.append(dealer, separator, vulnerability);
+      row.appendChild(dealerAndVulnerability);
+
+      // Populate the board number.
+      const board = document.createElement('td');
+      board.textContent = i + 1;
+      row.appendChild(board);
+
+      for (let j = 2; j < 8; j++) {
+        row.appendChild(document.createElement('td'));
+      }
+      table.appendChild(row);
+    }
+  }
+  
+  /** Builds the IMP conversion chart (raw score → IMP), column-major. */
+  function buildImpTable() {
+    const THRESHOLDS = [
+      20, 50, 90, 130, 170, 220, 270, 320, 370, 430, 500, 600, 750, 900,
+      1100, 1300, 1500, 1750, 2000, 2250, 2500, 3000, 3500, 4000
+    ];
+    const ROWS = 3;
+    const COLS = Math.ceil(THRESHOLDS.length / ROWS);
+
+    const table = document.getElementById('imps');
+    const tbody = table.createTBody();
+    const rows = Array.from({length: ROWS}, () => tbody.insertRow());
+
+    for (let c = 0; c < COLS; c++) {
+      for (let r = 0; r < ROWS; r++) {
+        const index = c * ROWS + r;
+        const threshold = THRESHOLDS[index];
+
+        const score = document.createElement('td');
+        score.textContent = `${threshold}+`;
+        rows[r].appendChild(score);
+
+        const imps = document.createElement('td');
+        imps.textContent = index + 1;
+        rows[r].appendChild(imps);
+      }
+    }
+  }
+
+  /** Builds the VP conversion chart (IMP margin → VP out of 20), column-major. */
+  function buildVpTable() {
+    const THRESHOLDS = [0, 1, 3, 5, 8, 11, 14, 17, 20, 24, 28];
+    const ROWS = 3;
+    const COLS = Math.ceil(THRESHOLDS.length / ROWS);
+
+    const table = document.getElementById('vps');
+    const tbody = table.createTBody();
+    const rows = Array.from({length: ROWS}, () => tbody.insertRow());
+
+    for (let c = 0; c < COLS; c++) {
+      for (let r = 0; r < ROWS; r++) {
+        const index = c * ROWS + r;
+
+        const imps = document.createElement('td');
+        const vps = document.createElement('td');
+
+        if (index < THRESHOLDS.length) {
+          const threshold = THRESHOLDS[index];
+          imps.textContent = threshold === 0 ? '0' : `${threshold}+`;
+          const win = index + 10;
+          const loss = 20 - win;
+          vps.textContent = win === loss ? '10 each' : `${win}-${loss}`;
+        }
+
+        rows[r].appendChild(imps);
+        rows[r].appendChild(vps);
+      }
+    }
+  }
+  
+  buildMainTable();
+  buildImpTable();
+  buildVpTable();
+</script>
