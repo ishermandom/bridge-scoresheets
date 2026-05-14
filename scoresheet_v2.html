@@ -22,11 +22,6 @@ TODO:
     --height: 8.5in;
     /* Hard margin: physical printer limit (non-printable area). */
     --hard-margin: 0.18in;
-    /* Bottom hard margin: not the printer's non-printable zone (unlike the
-       other sides) — the content ends ~3in from the paper's physical bottom
-       after the 90° rotation. Instead, sized for 2-sided print misalignment:
-       ~2.5mm observed. */
-    --bottom-hard-margin: 2.5mm;
     /* Soft margins: printable but obscured by the card holder. */
     --top-margin: 1in;
     --side-margin: 0.25in;
@@ -221,7 +216,7 @@ TODO:
   /* === License footer === */
   #license-footer {
     position: absolute;
-    bottom: var(--bottom-hard-margin);
+    bottom: var(--hard-margin);
     left: var(--side-margin);
     right: var(--side-margin);
     text-align: center;
@@ -240,7 +235,9 @@ TODO:
     width: var(--width);
   }
   #hard-top { height: var(--hard-margin); }
-  #hard-bottom { height: var(--bottom-hard-margin); }
+  #hard-bottom { height: var(--hard-margin); }
+  /* Both sides use --hard-margin: whichever side is not the cut line is at
+     the physical paper edge and requires the full printer margin. */
   #hard-left, #hard-right {
     top: 0;
     width: var(--hard-margin);

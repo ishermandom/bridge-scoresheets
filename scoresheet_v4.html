@@ -22,11 +22,6 @@ TODO:
     --height: 8.5in;
     /* Hard margin: physical printer limit (non-printable area). */
     --hard-margin: 0.18in;
-    /* Bottom hard margin: not the printer's non-printable zone (unlike the
-       other sides) — the content ends ~3in from the paper's physical bottom
-       after the 90° rotation. Instead, sized for 2-sided print misalignment:
-       ~2.5mm observed. */
-    --bottom-hard-margin: 2.5mm;
     /* Soft margins: printable but obscured by the card holder. */
     --top-margin: 1in;
     --side-margin: 0.25in;
@@ -253,15 +248,20 @@ TODO:
     text-align: left;
   }
   
-  /* === License footer === */
-  #license-footer {
+  /* === License note === */
+  #license-note {
     position: absolute;
-    bottom: var(--bottom-hard-margin);
-    left: var(--side-margin);
-    right: var(--side-margin);
-    text-align: center;
-    font-size: 6pt;
-    color: #888;
+    left: calc(var(--width) - var(--side-margin));
+    top: 0.65in;
+    bottom: var(--hard-margin);
+    width: 8px;
+    display: flex;
+    justify-content: center;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-size: 5pt;
+    color: #bbb;
+    letter-spacing: 0.3px;
   }
 
   /* === Hard-margin overlays (non-printable area) === */
@@ -275,12 +275,14 @@ TODO:
     width: var(--width);
   }
   #hard-top { height: var(--hard-margin); }
-  #hard-bottom { height: var(--bottom-hard-margin); }
+  #hard-bottom { height: var(--hard-margin); }
   #hard-left, #hard-right {
     top: 0;
-    width: var(--hard-margin);
     height: var(--height);
   }
+  /* Both sides use --hard-margin: whichever side is not the cut line is at
+     the physical paper edge and requires the full printer margin. */
+  #hard-left, #hard-right { width: var(--hard-margin); }
   #hard-top { top: 0; }
   #hard-bottom { bottom: 0; }
   #hard-left { left: 0; }
@@ -357,7 +359,7 @@ TODO:
   </div>
 </div>
 
-<div id="license-footer">© 2026 Ilya Sherman · CC BY-NC 4.0 · Non-commercial use only</div>
+<div id="license-note">© 2026 Ilya Sherman · CC BY-NC 4.0 · Non-commercial use only</div>
 
 <script>
   /**
