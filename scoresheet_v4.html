@@ -51,18 +51,17 @@ TODO:
       display: none;
     }
     
-    body {
+    body:not(.reverse) {
       transform: rotate(90deg) translate(-0.25in, -0.25in);
       border-left: 0;
       border-right: 1pt dashed black;
     }
-    /* For a 2-sided print: swap the active body rule above with this one,
-       then print again on the reverse side of the page. */
-    /*body {
+    /* Reverse side for duplex printing. Set via JS: body.classList.add('reverse') */
+    body.reverse {
       transform: rotate(-90deg) translate(0.25in, 0.25in);
       border-right: 0;
       border-left: 1pt dashed black;
-    }*/
+    }
   }
 
   /* === Base === */
