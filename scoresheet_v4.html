@@ -170,6 +170,46 @@ TODO:
    */
   #main td:nth-child(5) { width: 0.2in; }
   #main td:nth-child(8) { width: 8in; }
+
+  /* Section dividers by contrast, not weight. Every line stays 1px, matching
+     the horizontal rules. In the body, the within-zone column separators fade to
+     gray while the three section boundaries — and the outer frame — keep full
+     black, so the four functional zones read at a glance. The header keeps
+     all-black verticals; the gray looked out of place against the shaded header.
+     preprinted reference (D/V, Bd) | scores (Score, MPs) |
+     summarized notes (Vs, Lead, Contract) | detailed notes (Auction). */
+  #main td {
+    border-left-color: #999;
+    border-right-color: #999;
+  }
+  /* Outer frame stays black. */
+  #main td:first-child { border-left-color: black; }
+  #main td:last-child { border-right-color: black; }
+  /* The three section boundaries stay black. Both sides of each boundary are
+     set so the collapsed border resolves to black unambiguously. */
+  #main td:nth-child(2),
+  #main td:nth-child(4),
+  #main td:nth-child(7) {
+    border-right-color: black;
+  }
+  #main td:nth-child(3),
+  #main td:nth-child(5),
+  #main td:nth-child(8) {
+    border-left-color: black;
+  }
+
+  /* Backup idea — approach 3 (double hairline): a ledger-style double rule at
+     the three section boundaries, instead of the gray-contrast scheme above.
+     Width 2px is the preferred look; print fidelity not yet validated (the thin
+     gap may close up on a 600dpi laser). To use, swap this in for the approach-1
+     rules above:
+
+     #main td:nth-child(2), #main th:nth-child(2),
+     #main td:nth-child(4), #main th:nth-child(4),
+     #main td:nth-child(7), #main th:nth-child(7) {
+       border-right: 2px double gray;
+     }
+  */
   
   /* === Top matter === */
   #topmatter {

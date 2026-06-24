@@ -16,7 +16,7 @@ import asyncio
 import tempfile
 from pathlib import Path
 
-from playwright.async_api import async_playwright
+from playwright.async_api import Page, async_playwright
 from pypdf import PdfWriter
 
 _DIR = Path(__file__).parent
@@ -33,7 +33,7 @@ def _latest_scoresheet() -> Path:
   return candidates[-1]
 
 
-async def _render_pdf(page, dest: Path) -> None:
+async def _render_pdf(page: Page, dest: Path) -> None:
   """Prints the current page state to a PDF at dest."""
   await page.pdf(
     path=str(dest),
