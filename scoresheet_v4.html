@@ -13,6 +13,8 @@ TODO:
 
 -->
 
+<!DOCTYPE html>
+
 <style>
   /* === Variables === */
   :root {
@@ -25,6 +27,9 @@ TODO:
     /* Soft margins: printable but obscured by the card holder. */
     --top-margin: 1in;
     --side-margin: 0.25in;
+    /* Top inset of the writing surface (body padding-top). Distinct from
+       --top-margin: text may sit inside the holder, only writing must clear it. */
+    --content-top: 0.65in;
     /* Rows sized to fill the writable area; the remaining rows overflow into
        the bottom margin. Change --row-count to resize all rows at once. */
     --row-count: 26;
@@ -67,7 +72,7 @@ TODO:
     /* Note: The padding is not quite aligned with the top margin because it's
      * ok for some text to be inside the holder, as long as the writing surface
      * is outside. And the card actually can slide a bit within the holder. */
-    padding: 0.65in var(--side-margin);
+    padding: var(--content-top) var(--side-margin);
     font-family: 'Helvetica Neue';
     font-size: 8pt;
     box-sizing: border-box;
@@ -105,7 +110,7 @@ TODO:
 
   #main tbody tr {
     height: calc(
-      (var(--height) - var(--top-margin) - 0.65in - var(--header-height))
+      (var(--height) - var(--top-margin) - var(--content-top) - var(--header-height))
       / var(--row-count)
     );
   }
@@ -289,7 +294,7 @@ TODO:
   #license-note {
     position: absolute;
     left: calc(var(--width) - var(--side-margin));
-    top: 0.65in;
+    top: var(--content-top);
     bottom: var(--hard-margin);
     width: 8px;
     display: flex;
@@ -310,9 +315,8 @@ TODO:
   #hard-top, #hard-bottom {
     left: 0;
     width: var(--width);
+    height: var(--hard-margin);
   }
-  #hard-top { height: var(--hard-margin); }
-  #hard-bottom { height: var(--hard-margin); }
   #hard-left, #hard-right {
     top: 0;
     height: var(--height);
@@ -411,7 +415,7 @@ TODO:
     const DEALERS = ['N', 'E', 'S', 'W'];
     const VULNERABILITIES = ['———', 'N/S', 'E/W', 'ALL'];
 
-    const table = document.getElementsByTagName('tbody')[0];
+    const table = document.querySelector('#main tbody');
     for (let i = 0; i < 28; i++) {
       const row = document.createElement('tr');
 

@@ -43,6 +43,7 @@ async def _render_pdf(page: Page, dest: Path) -> None:
 
 
 async def main() -> None:
+  """Parses arguments and writes the duplex-ready two-page PDF."""
   parser = argparse.ArgumentParser(description=__doc__)
   parser.add_argument(
     '-i',
@@ -91,4 +92,5 @@ async def main() -> None:
   print(f'Written: {output_path}')
 
 
-asyncio.run(main())
+if __name__ == '__main__':
+  asyncio.run(main())
