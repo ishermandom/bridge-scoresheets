@@ -38,9 +38,14 @@ TODO:
   
   /* === Media queries === */
   @media screen {
-    /* This matches real-world dimensions on my laptop. */
+    /* Scale up to match real-world dimensions on my laptop. A transform
+       scales the rendering after layout, so the preview wraps and stacks
+       exactly as print does. (The zoom property would re-round every line
+       box at the zoomed size instead, laying out shorter than print and
+       hiding overflow that print reveals.) */
     body {
-      zoom: 1.39;
+      transform: scale(1.39);
+      transform-origin: top left;
     }
   }
   
