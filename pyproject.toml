@@ -1,0 +1,42 @@
+# Copyright 2026 Ilya Sherman (ishermandom@)
+# SPDX-License-Identifier: MIT
+#
+# Project metadata for the scoresheets repo. Nothing here is installable (there
+# is deliberately no [build-system]): print_duplex.py is a standalone script,
+# run by path. What this file exists for is to declare what that script
+# imports, so the packages come from a `.venv` this repo owns rather than from
+# whatever the account's shared environment happens to hold.
+#
+# Run `uv sync` to materialize the dependencies into `.venv` at the repo root.
+
+[project]
+name = "bridge-scoresheets"
+version = "0"
+requires-python = ">=3.14"
+
+# print_duplex.py drives a headless Chromium through playwright to render each
+# side of the scoresheet, then merges the two one-page PDFs with pypdf.
+#
+# Declaring playwright installs the Python package that drives a browser, not
+# the browser itself — those binaries are fetched by a separate command, which
+# the README carries.
+dependencies = [
+  "playwright",
+  "pypdf",
+]
+
+[dependency-groups]
+# No pytest — this repo has no tests. mypy and ruff earn their place because
+# the Stop hooks run both against print_duplex.py. Both playwright and pypdf
+# ship a py.typed marker, so neither needs a stub package alongside it.
+dev = [
+  "mypy",
+  "ruff",
+]
+
+[tool.uv]
+# This repo is not a Python package — print_duplex.py is run by path, never
+# imported from an installed distribution. `package = false` says so: `uv sync`
+# installs the dependencies above into `.venv` and does not try to build or
+# install this repo itself. Without it uv looks for a build backend and fails.
+package = false

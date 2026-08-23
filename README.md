@@ -72,15 +72,20 @@ duplex-ready PDF.
 
 **Install dependencies:**
 
+```sh
+uv sync
+uv run playwright install chromium
 ```
-pip install playwright pypdf
-playwright install chromium
-```
+
+`uv sync` builds `.venv` from the versions `uv.lock` pins. The second command is
+separate because the playwright package drives a browser without carrying one —
+it expects a specific Chromium build and fetches it on request, so an upgrade
+that moves playwright can call for a newer build than the one already on disk.
 
 **Usage:**
 
-```
-python print_duplex.py [-i SCORESHEET.html] [-o OUTPUT.pdf]
+```sh
+uv run python print_duplex.py [-i SCORESHEET.html] [-o OUTPUT.pdf]
 ```
 
 Both flags are optional. By default, the script picks the latest scoresheet in

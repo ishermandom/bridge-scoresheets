@@ -1,0 +1,7 @@
+# The project venv, built by `uv sync` from the committed uv.lock. Machine
+# state, not source — the lockfile is what pins the contents.
+.venv/
+
+# Python bytecode.
+__pycache__/
+*.pyc
